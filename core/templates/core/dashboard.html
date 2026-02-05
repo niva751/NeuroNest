@@ -1,0 +1,17 @@
+
+{% extends 'games/base.html' %}
+{% comment %} <h1>Welcome {{request.user.username}}</h1>
+<a href="/memory/">🧠 Memory Diary</a>
+<a href="/games/">🎮 Games</a>
+<a href="/logout/">Logout</a>
+
+<h3>Draw Canvas</h3>
+<canvas id="draw" width="300" height="300"></canvas>
+<button onclick="sendDrawing()">Submit</button>
+<button onclick="clearCanvas()">Clear</button>
+
+<h3>Community Chat</h3>
+<div id="chat-box" style="border:1px solid #333;height:150px;overflow:auto;"></div>
+<input type="text" id="msg"><button onclick="sendMessage()">Send</button>
+
+<script src="/static/js/app.js"></script> {% endcomment %}

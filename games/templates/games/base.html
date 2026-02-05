@@ -1,0 +1,42 @@
+ {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NEURONEST</title>
+    <link rel="stylesheet" href="{% static 'games/styles.css' %}">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        header { background-color: #2e7d32; color: white; padding: 10px; display: flex; align-items: center; justify-content: space-between; }
+        nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: bold; }
+        .game-container { display: flex; flex-wrap: wrap; margin: 20px; }
+        .game-card { border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin: 10px; width: 200px; text-align: center; cursor: pointer; }
+        .game-card img { width: 80px; height: 80px; }
+        .game-card:hover { box-shadow: 0 0 10px #2e7d32; }
+    </style>
+</head>
+<body>
+    <header>
+        <div><strong>NEURONEST</strong></div>
+        <nav>
+            <a href="{% url 'games_home' %}">HOME</a>
+            <a href="{% url 'games_home' %}">GAMES</a>
+            <a href="#">DOCTORS</a>
+            <a href="#">EVENTS</a>
+            <a href="#">ABOUT</a>
+            <a href="#">CONTACT US</a>
+            <a href="#">PROFILE</a>
+        </nav>
+        <select id="language-select">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+        </select>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+</body>
+</html> 
+
+

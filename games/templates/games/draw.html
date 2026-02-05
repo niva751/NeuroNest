@@ -1,0 +1,64 @@
+{% extends 'games/base.html' %}
+
+{% block title %}Draw an Image{% endblock %}
+
+{% block content %}
+<h1>Draw an Image</h1>
+<canvas id="canvas" width="400" height="400"></canvas>
+<div class="buttons">
+    <button onclick="clearCanvas()">Clear</button>
+    <button onclick="sendDrawing()">Submit</button>
+</div>
+
+<p id="result"></p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    canvas.addEventListener('mousedown', () => drawing = true);
+    canvas.addEventListener('mouseup', () => drawing = false);
+    canvas.addEventListener('mousemove', draw);
+
+    function draw(e) {
+        if (!drawing) return;
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "black";
+
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+    }
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function sendDrawing() {
+        const dataURL = canvas.toDataURL('image/png');
+
+        fetch("{% url 'ml_draw' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: "image=" + encodeURIComponent(dataURL)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.similarity){
+                document.getElementById('result').innerText = 
+                    "Similarity: " + data.similarity + "%";
+            } else {
+                document.getElementById('result').innerText = data.error;
+            }
+        });
+    }
+</script>
+{% endblock %}

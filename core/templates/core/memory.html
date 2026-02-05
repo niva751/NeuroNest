@@ -1,0 +1,12 @@
+<h2>Memory Diary</h2>
+<form method="post">{% csrf_token %}
+<textarea name="text"></textarea>
+<button>Add Memory</button>
+</form>
+
+<ul>
+{% for m in data %}
+<li>{{m.text}}</li>
+{% endfor %}
+</ul>
+<a href="/dashboard/">Back</a>
