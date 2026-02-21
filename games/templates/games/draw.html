@@ -1,64 +1,61 @@
 {% extends 'games/base.html' %}
-
-{% block title %}Draw an Image{% endblock %}
+{% load static %}
 
 {% block content %}
-<h1>Draw an Image</h1>
-<canvas id="canvas" width="400" height="400"></canvas>
-<div class="buttons">
+<h1>{{ game_name }}</h1>
+
+<p>Draw the following object:</p>
+<img id="target" src="{% static 'games/fruit_apple.png' %}" width="150" style="border:1px solid #333; margin-bottom:10px;">
+
+<canvas id="canvas" width="500" height="400" style="border:1px solid #333; margin-top:10px;"></canvas>
+
+<div style="margin-top:10px;">
     <button onclick="clearCanvas()">Clear</button>
-    <button onclick="sendDrawing()">Submit</button>
+    <button onclick="saveDrawing()">Save</button>
 </div>
 
-<p id="result"></p>
+<p id="msg" style="font-weight:bold; margin-top:10px;"></p>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
 
-    canvas.addEventListener('mousedown', () => drawing = true);
-    canvas.addEventListener('mouseup', () => drawing = false);
-    canvas.addEventListener('mousemove', draw);
+// Drawing logic
+canvas.addEventListener('mousedown', () => drawing = true);
+canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
+canvas.addEventListener('mousemove', draw);
 
-    function draw(e) {
-        if (!drawing) return;
-        ctx.lineWidth = 3;
-        ctx.lineCap = "round";
-        ctx.strokeStyle = "black";
+function draw(e){
+    if(!drawing) return;
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "black";
 
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(e.offsetX, e.offsetY);
-    }
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
+}
 
-    function clearCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+// Clear canvas
+function clearCanvas(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    document.getElementById('msg').innerText = '';
+}
 
-    function sendDrawing() {
-        const dataURL = canvas.toDataURL('image/png');
+// Save drawing (frontend only)
+function saveDrawing(){
+    const dataURL = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = dataURL;
+    a.download = 'drawing.png';
+    a.click();
 
-        fetch("{% url 'ml_draw' %}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-CSRFToken": "{{ csrf_token }}"
-            },
-            body: "image=" + encodeURIComponent(dataURL)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.similarity){
-                document.getElementById('result').innerText = 
-                    "Similarity: " + data.similarity + "%";
-            } else {
-                document.getElementById('result').innerText = data.error;
-            }
-        });
-    }
+    document.getElementById('msg').innerText = "Drawing saved locally!";
+}
 </script>
 {% endblock %}
