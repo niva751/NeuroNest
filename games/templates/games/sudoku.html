@@ -1,22 +1,134 @@
 {% extends 'games/base.html' %}
-
-{% block title %}Sudoku Game{% endblock %}
+{% load static %}
 
 {% block content %}
-<h2>Sudoku Game</h2>
-<table border="1">
-    {% for row in puzzle %}
-    <tr>
-        {% for cell in row %}
-        <td>
-            {% if cell != 0 %}
-                {{ cell }}
-            {% else %}
-                <input type="number" min="1" max="9">
-            {% endif %}
-        </td>
-        {% endfor %}
-    </tr>
-    {% endfor %}
-</table>
+<main>
+    <h2>{{ game_name }}</h2>
+    <p>Complete the Sudoku puzzle before time runs out!</p>
+
+    <div id="timer">Time Left: 60s</div> <!-- 1 min -->
+    <div id="sudokuBoard" class="sudoku-board"></div>
+    <p id="scoreDisplay">Score: 0</p>
+
+    <form id="scoreForm" method="POST" style="display:none;">
+        {% csrf_token %}
+        <input type="hidden" name="score" id="scoreInput">
+    </form>
+
+    <script>
+        const puzzle = {{ puzzle|safe }};
+        const sudokuBoard = document.getElementById('sudokuBoard');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const timerDisplay = document.getElementById('timer');
+
+        let score = 0;
+        let timeLeft = 60; // 1 minute
+        let gameOver = false;
+
+        // Generate Sudoku board
+        puzzle.forEach((row, i) => {
+            row.forEach((cell, j) => {
+                let input = document.createElement('input');
+                input.type = cell === 0 ? 'number' : 'text';
+                input.value = cell === 0 ? '' : cell;
+                input.dataset.row = i;
+                input.dataset.col = j;
+                if(cell !== 0) input.readOnly = true; 
+                input.className = 'sudoku-cell';
+                input.min = 1;
+                input.max = 9;
+                sudokuBoard.appendChild(input);
+            });
+        });
+
+        // Countdown timer
+        const countdown = setInterval(() => {
+            if(gameOver) return;
+            timeLeft--;
+            timerDisplay.innerText = 'Time Left: ' + timeLeft + 's';
+            if(timeLeft <= 0){
+                clearInterval(countdown);
+                gameOver = true;
+                alert('Time is up! Your score: ' + score);
+                submitScore(score);
+            }
+        }, 1000);
+
+  
+        function calculateScore(){
+            score = 0;
+            const cells = Array.from(document.getElementsByClassName('sudoku-cell'));
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+               
+                if(!cell.readOnly && cell.value && parseInt(cell.value) === puzzle[row][col]){
+                    score += 10;
+                }
+            });
+            scoreDisplay.innerText = 'Score: ' + score;
+        }
+
+        setInterval(() => {
+            if(!gameOver) calculateScore();
+        }, 1000);
+
+        function submitScore(finalScore){
+            document.getElementById('scoreInput').value = finalScore;
+            document.getElementById('scoreForm').submit();
+        }
+    </script>
+
+    <style>
+        .sudoku-board { 
+            display: grid; 
+            grid-template-columns: repeat(9, 45px); 
+            grid-gap: 3px; 
+            margin: 20px auto; 
+            width: max-content;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 2px solid #2e7d32;
+            border-radius: 8px;
+        }
+
+        .sudoku-cell { 
+            width: 45px; 
+            height: 45px; 
+            text-align: center; 
+            font-size: 1.2rem; 
+            border: 1px solid #333; 
+            border-radius: 4px;
+            background-color: #fff;
+            transition: all 0.2s;
+        }
+
+        .sudoku-cell:focus {
+            outline: none;
+            border-color: #2e7d32;
+            background-color: #e8f5e9;
+        }
+
+        #timer { 
+            margin: 10px 0; 
+            color: #d32f2f; 
+            font-weight:bold; 
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        #scoreDisplay {
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</main>
 {% endblock %}
