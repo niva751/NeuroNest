@@ -1,0 +1,31 @@
+{% extends 'games/base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <h2 style="margin:20px;">GAMES</h2>
+    <p style="margin:20px;">Play games with us for boosting your memory</p>
+
+    <div class="game-container">
+        {% for game in games %}
+        <div class="game-card" onclick="location.href='{% url game.url_name %}'">
+            <img src="{{ game.image.url }}" alt="{{ game.name }}">
+            <h3>{{ game.name }}</h3>
+            <p>{{ game.description }}</p>
+            <span>Start Playing →</span>
+        </div>
+        {% empty %}
+        <p>No games available yet. Please check back later!</p>
+        {% endfor %}
+    </div>
+
+    <h2 style="margin:20px;">Top Scores</h2>
+    <ul>
+        {% for score in top_scores %}
+            <li>{{ score.user.username }} - {{ score.game.name }}: {{ score.score }}</li>
+        {% empty %}
+            <li>No scores yet!</li>
+        {% endfor %}
+    </ul>
+</main>
+{% endblock %}
