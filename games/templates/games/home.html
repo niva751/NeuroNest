@@ -1,42 +1,21 @@
 {% extends 'games/base.html' %}
-{% load static %}
+
 {% block content %}
-    <main>
-        <h2 style="margin:20px;">GAMES</h2>
-        <p style="margin:20px;">Play games with us for boosting your memory</p>
+<h2>Uploaded Images</h2>
 
-        <div class="game-container">
-            <!-- Flip Card -->
-            <div class="game-card" onclick="location.href='{% url 'flipcard' %}'">
-                <img src="{% static 'games/icons/flipcard.png' %}" alt="Flip Card">
-                <h3>FLIP CARD</h3>
-                <p>Two overlapping diamond shapes</p>
-                <span>Start Playing →</span>
-            </div>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="image" required>
+    <textarea name="description" placeholder="Enter description"></textarea>
+    <button type="submit">Upload</button>
+</form>
 
-            <!-- Sudoku -->
-            <div class="game-card" onclick="location.href='{% url 'sudoku' %}'">
-                <img src="{% static 'games/icons/sudoku.png' %}" alt="Sudoku">
-                <h3>SUDOKU</h3>
-                <p>A grid containing numbers</p>
-                <span>Start Playing →</span>
-            </div>
-
-            <!-- Hangman -->
-            <div class="game-card" onclick="location.href='{% url 'hangman' %}'">
-                <img src="{% static 'games/icons/hangman.png' %}" alt="Hangman">
-                <h3>HANG MAN</h3>
-                <p>A gallows/noose illustration</p>
-                <span>Start Playing →</span>
-            </div>
-
-            <!-- Draw an Image -->
-            <div class="game-card" onclick="location.href='{% url 'draw_page' %}'">
-                <img src="{% static 'games/icons/draw.png' %}" alt="Draw an Image">
-                <h3>DRAW AN IMAGE</h3>
-                <p>A pencil icon</p>
-                <span>Start Playing →</span>
-            </div>
-        </div>
-    </main>
+<div>
+    {% for img in images %}
+        <img src="{{ img.image.url }}" alt="Image" style="max-width:300px;">
+        <p>{{ img.description }}</p>
+    {% empty %}
+        <p>No images uploaded yet.</p>
+    {% endfor %}
+</div>
 {% endblock %}
