@@ -1,15 +1,55 @@
 
-<h2>Login</h2>
+<body style="margin:0; padding:0; height:100vh; display:flex; justify-content:center; align-items:center; background: linear-gradient(135deg,#26a67d,#1f7a63); font-family: Arial, sans-serif;">
 
-<form method="post">
+<div style="width:100%;">
+
+<h2 style="text-align:center; color:#ffffff; margin-bottom: 25px; letter-spacing:1px;">
+    Login
+</h2>
+
+<form method="post" 
+      style="max-width: 400px; 
+             margin: 0 auto; 
+             padding: 30px; 
+             border: none; 
+             border-radius: 15px; 
+             background-color: #ffffff; 
+             box-shadow: 0 15px 35px rgba(0,0,0,0.25); 
+             animation: fadeIn 0.8s ease-in-out;">
+
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
+
+    <div style="margin-bottom:15px;">
+        {{ form.as_p }}
+    </div>
+
+    <button type="submit" 
+            style="width: 100%; 
+                   padding: 12px; 
+                   background: linear-gradient(135deg,#26a67d,#1f7a63); 
+                   color: white; 
+                   border: none; 
+                   border-radius: 25px; 
+                   font-size: 16px; 
+                   cursor: pointer; 
+                   transition: 0.3s; 
+                   margin-top: 10px;"
+            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.3)';"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
+        Login
+    </button>
+
 </form>
 
-<a href="{% url 'register' %}">Register</a> 
+<p style="text-align:center; margin-top: 20px; font-size: 14px; color: #ffffff;">
+    <a href="{% url 'register' %}" 
+       style="color: #ffffff; text-decoration: none; font-weight: bold; border:1px solid #fff; padding:8px 20px; border-radius:20px; transition:0.3s;"
+       onmouseover="this.style.background='#fff'; this.style.color='#1f7a63';"
+       onmouseout="this.style.background='transparent'; this.style.color='#ffffff';">
+       Register
+    </a>
+</p>
 
+</div>
 
-
-
-
+</body>
