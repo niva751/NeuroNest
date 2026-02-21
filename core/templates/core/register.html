@@ -1,22 +1,105 @@
-
- <h2>Register</h2>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-</form>
-
-<a href="{% url 'login' %}">Login</a> 
-
-
-
-
-
-
-
-
 {% block content %}
+
+<style>
+body{
+    margin:0;
+    padding:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(135deg,#26a67d,#1f7a63);
+    font-family: Arial, sans-serif;
+}
+
+.auth-card{
+    width:100%;
+    max-width:400px;
+    background:#ffffff;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 20px 45px rgba(0,0,0,0.25);
+    text-align:center;
+    animation:fadeIn 0.8s ease-in-out;
+}
+
+.auth-card h2{
+    margin-bottom:25px;
+    color:#333;
+    letter-spacing:1px;
+}
+
+.auth-card form p{
+    margin-bottom:15px;
+    text-align:left;
+}
+
+.auth-card input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    outline:none;
+    transition:0.3s;
+    font-size:14px;
+}
+
+.auth-card input:focus{
+    border-color:#26a67d;
+    box-shadow:0 0 8px rgba(38,166,125,0.4);
+}
+
+.auth-card button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:30px;
+    background: linear-gradient(135deg,#26a67d,#1f7a63);
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.auth-card button:hover{
+    transform:scale(1.05);
+    box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+.auth-card a{
+    display:block;
+    margin-top:20px;
+    font-size:14px;
+    color:#26a67d;
+    text-decoration:none;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.auth-card a:hover{
+    text-decoration:underline;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@media(max-width:480px){
+    .auth-card{
+        margin:20px;
+        padding:25px;
+    }
+}
+</style>
+
 <div class="auth-card">
     <h2>Register</h2>
     <form method="post">
@@ -26,7 +109,5 @@
     </form>
     <a href="{% url 'login' %}">Already have an account? Login</a>
 </div>
+
 {% endblock %}
-
-
-
