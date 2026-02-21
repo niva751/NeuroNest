@@ -1,0 +1,105 @@
+{% extends 'games/base.html' %}
+
+{% block content %}
+<main style="text-align:center; padding:20px;">
+
+<h2>{{ game_name }}</h2>
+<p>Solve as many questions as you can in 30 seconds</p>
+
+<h3 id="timer">Time: 30s</h3>
+<h2 id="question"></h2>
+
+<input type="number" id="answer" autofocus>
+<button onclick="checkAnswer()">Submit</button>
+
+<h3>Score: <span id="score">0</span></h3>
+
+<form id="scoreForm" method="POST" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="score" id="finalScore">
+</form>
+
+<script>
+let timeLeft = 30;
+let score = 0;
+let correctAnswer = 0;
+let gameOver = false;
+
+const operations = ["+", "-", "*", "/", "%", "square"];
+
+function generateQuestion(){
+    let a = Math.floor(Math.random()*10)+1;
+    let b = Math.floor(Math.random()*10)+1;
+    let op = operations[Math.floor(Math.random()*operations.length)];
+
+    let q = "";
+
+    switch(op){
+        case "+":
+            correctAnswer = a + b;
+            q = `${a} + ${b}`;
+            break;
+        case "-":
+            correctAnswer = a - b;
+            q = `${a} - ${b}`;
+            break;
+        case "*":
+            correctAnswer = a * b;
+            q = `${a} × ${b}`;
+            break;
+        case "/":
+            correctAnswer = Math.floor(a / b);
+            q = `${a} ÷ ${b} (integer)`;
+            break;
+        case "%":
+            correctAnswer = a % b;
+            q = `${a} % ${b}`;
+            break;
+        case "square":
+            correctAnswer = a * a;
+            q = `${a}²`;
+            break;
+    }
+
+    document.getElementById("question").innerText = q;
+    document.getElementById("answer").value = "";
+}
+
+function checkAnswer(){
+    if(gameOver) return;
+
+    let userAns = parseInt(document.getElementById("answer").value);
+
+    if(userAns === correctAnswer){
+        score += 10;
+    } else {
+        score -= 5;
+    }
+
+    document.getElementById("score").innerText = score;
+    generateQuestion();
+}
+
+// Timer
+const timer = setInterval(()=>{
+    timeLeft--;
+    document.getElementById("timer").innerText = "Time: " + timeLeft + "s";
+
+    if(timeLeft <= 0){
+        clearInterval(timer);
+        gameOver = true;
+        endGame();
+    }
+},1000);
+
+function endGame(){
+    alert("⏱ Time Over! Final Score: " + score);
+    document.getElementById("finalScore").value = score;
+    document.getElementById("scoreForm").submit();
+}
+
+generateQuestion();
+</script>
+
+</main>
+{% endblock %}

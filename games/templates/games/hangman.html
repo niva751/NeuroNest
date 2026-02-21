@@ -1,0 +1,125 @@
+{% extends 'games/base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <h2>{{ game_name }}</h2>
+    <h4>Fruits name</h4>
+    <p>Guess the word before time runs out!</p>
+
+    <div id="timer">Time Left: 60s</div>
+    <p id="word"></p>
+    <p>Attempts: <span id="tries">6</span></p>
+    <p>Score: <span id="scoreDisplay">0</span></p>
+
+    <div id="letters"></div>
+
+    <form id="scoreForm" method="POST" style="display:none;">
+        {% csrf_token %}
+        <input type="hidden" name="score" id="scoreInput">
+    </form>
+
+    <script>
+    
+    const words = ["apple", "banana", "cherry", "orange", "grape", "mango"];
+
+    let word = words[Math.floor(Math.random() * words.length)];
+    let displayWord = Array(word.length).fill("_").join(" ");
+    let tries = 6;
+    let score = 0;
+    let timeLeft = 30;
+    let gameOver = false;
+
+    document.getElementById("word").innerText = displayWord;
+    document.getElementById("scoreDisplay").innerText = score;
+
+    // Create alphabet buttons
+    const lettersDiv = document.getElementById("letters");
+    for(let i=65; i<=90; i++){ // A-Z
+        let letter = String.fromCharCode(i);
+        let btn = document.createElement("button");
+        btn.innerText = letter;
+        btn.style.width = "50px";
+        btn.style.height = "50px";
+        btn.style.margin = "3px";
+        btn.style.fontWeight = "bold";
+        btn.onclick = () => guessLetter(letter.toLowerCase(), btn);
+        lettersDiv.appendChild(btn);
+    }
+
+    // Countdown timer
+    const countdown = setInterval(() => {
+        if(gameOver) return;
+        timeLeft--;
+        document.getElementById("timer").innerText = "Time Left: " + timeLeft + "s";
+        if(timeLeft <= 0){
+            clearInterval(countdown);
+            gameOver = true;
+            alert("⏰ Time's up! Word was: " + word + "\nScore: " + score);
+            submitScore(score);
+            disableAll();
+        }
+    }, 1000);
+
+    function guessLetter(letter, btn){
+        if(gameOver) return;
+        btn.disabled = true;
+
+        let updatedWord = "";
+        let correct = false;
+        for(let i=0; i<word.length; i++){
+            if(word[i] === letter){
+                updatedWord += letter + " ";
+                correct = true;
+            } else {
+                updatedWord += displayWord[i*2] + " ";
+            }
+        }
+        displayWord = updatedWord.trim();
+        document.getElementById("word").innerText = displayWord;
+
+        if(correct){
+            score += 10;
+        } else {
+            tries--;
+            score -= 5;
+            document.getElementById("tries").innerText = tries;
+        }
+        document.getElementById("scoreDisplay").innerText = score;
+
+        if(!displayWord.includes("_")){
+            gameOver = true;
+            alert("🎉 You guessed it! Word: " + word + "\nScore: " + score);
+            submitScore(score);
+            disableAll();
+        }
+
+        if(tries === 0){
+            gameOver = true;
+            alert("❌ Game Over! Word was: " + word + "\nScore: " + score);
+            submitScore(score);
+            disableAll();
+        }
+    }
+
+    function disableAll(){
+        document.querySelectorAll("#letters button").forEach(b => b.disabled = true);
+    }
+
+    function submitScore(finalScore){
+        document.getElementById("scoreInput").value = finalScore;
+        document.getElementById("scoreForm").submit();
+    }
+    </script>
+
+    <style>
+    #letters button {
+        border-radius:5px; border:1px solid #333;
+        cursor:pointer; transition:0.2s;
+    }
+    #letters button:hover { transform: scale(1.05); opacity:0.9; }
+    main { text-align:center; font-family:Arial, sans-serif; padding:20px; }
+    #tries, #scoreDisplay, #timer { font-weight:bold; font-size:18px; margin-top:10px; }
+    </style>
+</main>
+{% endblock %}
